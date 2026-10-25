@@ -1,17 +1,6 @@
 import { useState } from 'react'
 import './App.css'
-
-
-function ParticipantCard({ name, role, status }) {
-  return (
-    <div className="desk">
-      <div className="avatar">👨🏽‍💻</div>
-      <h3>{name}</h3>
-      <p>{role}</p>
-      <span className="status">{status}</span>
-    </div>
-  )
-}
+import ParticipantCard from './components/participantCard.jsx'
 
 
 function App() {

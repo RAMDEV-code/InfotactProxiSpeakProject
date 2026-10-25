@@ -89,6 +89,16 @@
   font-weight: bold;
 }
 
+.status.speaking {
+  background: #fce8e6;
+  color: #b42318;
+}
+
+.status.listening {
+  background: #eaf5ed;
+  color: #23754a;
+}
+
 
 
 
