@@ -1,6 +1,36 @@
+import { useState } from 'react'
 import './App.css'
 
+
+function ParticipantCard({ name, role, status }) {
+  return (
+    <div className="desk">
+      <div className="avatar">👨🏽‍💻</div>
+      <h3>{name}</h3>
+      <p>{role}</p>
+      <span className="status">{status}</span>
+    </div>
+  )
+}
+
+
 function App() {
+  const [isSpeaking, setIsSpeaking] = useState(false)
+
+  const participants = [
+    {
+      id: 1,
+      name: "Alex",
+      role: "Frontend Developer",
+      status: "Listening"
+    },
+    {
+      id: 2,
+      name: "You",
+      role: "Participant",
+      status: isSpeaking ? "Speaking" : "Listening"
+    }
+  ]
   return (
     <main className="app">
       <header className="app-header">
@@ -10,20 +40,24 @@ function App() {
 
       <section className="office">
         <h2>Virtual Office</h2>
+        <button
+            type="button"
+            onClick={() => setIsSpeaking((current) => !current)}>
+            {isSpeaking ? "Stop speaking" : "Start speaking"}
+        </button>
 
         
         <div className="speaking-area">
-          <div className="desk">
-            <div className="avatar">👨🏽‍💻</div>
-            <h3>Alex</h3>
-            <p>Frontend Developer</p>
-          </div>
+          
+        {participants.map((participant) => (
+          <ParticipantCard
+            key={participant.id}
+            name={participant.name}
+            role={participant.role}
+            status={participant.status}
+          />
+        ))}
 
-          <div className="desk">
-            <div className="avatar">👩🏽‍💻</div>
-            <h3>You</h3>
-            <p>Participant</p>
-          </div>
         </div>
 
       </section>

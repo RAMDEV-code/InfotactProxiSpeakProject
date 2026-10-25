@@ -78,6 +78,18 @@
 }
 
 
+.status {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #eaf5ed;
+  color: #23754a;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+
 
 
 
