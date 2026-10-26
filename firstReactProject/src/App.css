@@ -99,6 +99,50 @@
   color: #23754a;
 }
 
+.office-room {
+  position: relative;
+  min-height: 420px;
+  margin-top: 24px;
+  background: #f0f6f1;
+  border: 1px solid #d9e5dc;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.office-person {
+  position: absolute;
+  width: 130px;
+  padding: 12px;
+  text-align: center;
+  background: white;
+  border: 1px solid #d9e5dc;
+  border-radius: 14px;
+}
+
+.office-person .avatar {
+  margin-bottom: 8px;
+}
+
+.office-person h3 {
+  margin: 6px 0;
+}
+
+.office-person p {
+  margin: 0;
+  color: #617267;
+  font-size: 13px;
+}
+
+.person-one {
+  top: 32px;
+  left: 32px;
+}
+
+.person-two {
+  right: 32px;
+  bottom: 32px;
+}
+
 
 
 

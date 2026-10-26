@@ -7,19 +7,23 @@ function App() {
   const [isSpeaking, setIsSpeaking] = useState(false)
 
   const participants = [
-    {
-      id: 1,
-      name: "Alex",
-      role: "Frontend Developer",
-      status: "Listening"
-    },
-    {
-      id: 2,
-      name: "You",
-      role: "Participant",
-      status: isSpeaking ? "Speaking" : "Listening"
-    }
-  ]
+  {
+    id: 1,
+    name: "Alex",
+    role: "Frontend Developer",
+    status: "Listening",
+    x: 100,
+    y: 120
+  },
+  {
+    id: 2,
+    name: "You",
+    role: "Participant",
+    status: isSpeaking ? "Speaking" : "Listening",
+    x: 1200,
+    y: 260
+  }
+]
   return (
     <main className="app">
       <header className="app-header">
@@ -38,16 +42,28 @@ function App() {
         
         <div className="speaking-area">
           
-        {participants.map((participant) => (
-          <ParticipantCard
-            key={participant.id}
-            name={participant.name}
-            role={participant.role}
-            status={participant.status}
-          />
-        ))}
-
+        
         </div>
+
+        {participants.map((participant) => (
+  <div
+    key={participant.id}
+    className="office-person"
+    style={{
+      left: `${Math.min(participant.x, 500)}px`,
+      top: `${participant.y}px`
+    }}
+  >
+    <div className="avatar">👨🏽‍💻</div>
+    <h3>{participant.name}</h3>
+    <p>{participant.role}</p>
+    <span className={`status ${participant.status.toLowerCase()}`}>
+      {participant.status}
+    </span>
+  </div>
+))}
+
+
 
       </section>
     </main>
