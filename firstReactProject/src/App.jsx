@@ -1,29 +1,41 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 import ParticipantCard from './components/participantCard.jsx'
 
 
 function App() {
   const [isSpeaking, setIsSpeaking] = useState(false)
+  const [participants, setParticipants] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
-  const participants = [
-  {
-    id: 1,
-    name: "Alex",
-    role: "Frontend Developer",
-    status: "Listening",
-    x: 100,
-    y: 120
-  },
-  {
-    id: 2,
-    name: "You",
-    role: "Participant",
-    status: isSpeaking ? "Speaking" : "Listening",
-    x: 1200,
-    y: 260
+  const [name, setName] = useState('')
+  const [role, setRole] = useState('')
+  const [adding, setAdding] = useState(false)
+
+  useEffect(() => {
+  async function fetchParticipants() {
+    try {
+      const response = await fetch(
+        'http://localhost:5000/api/participants'
+      )
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch participants')
+      }
+
+      const result = await response.json()
+      setParticipants(result.data)
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setLoading(false)
+    }
   }
-]
+
+  fetchParticipants()
+}, [])
+
   return (
     <main className="app">
       <header className="app-header">
@@ -32,41 +44,102 @@ function App() {
       </header>
 
       <section className="office">
-        <h2>Virtual Office</h2>
-        <button
-            type="button"
-            onClick={() => setIsSpeaking((current) => !current)}>
-            {isSpeaking ? "Stop speaking" : "Start speaking"}
-        </button>
+    <h2>Virtual Office</h2>
 
-        
-        <div className="speaking-area">
-          
-        
+    <button
+      type="button"
+      onClick={() => setIsSpeaking((current) => !current)}
+    >
+      {isSpeaking ? "Stop speaking" : "Start speaking"}
+    </button>
+
+    <form
+  onSubmit={async (event) => {
+    event.preventDefault()
+    setAdding(true)
+    setError('')
+
+    try {
+      const response = await fetch(
+        'http://localhost:5000/api/participants',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            name,
+            role,
+            x: 150,
+            y: 180
+          })
+        }
+      )
+
+      const result = await response.json()
+
+      if (!response.ok) {
+        throw new Error(
+          result.message || 'Could not add participant'
+        )
+      }
+
+      setParticipants((current) => [...current, result.data])
+      setName('')
+      setRole('')
+    } catch (err) {
+      setError(err.message)
+    } finally {
+      setAdding(false)
+    }
+  }}
+>
+  <input
+    type="text"
+    placeholder="Participant name"
+    value={name}
+    onChange={(event) => setName(event.target.value)}
+    required
+  />
+
+  <input
+    type="text"
+    placeholder="Participant role"
+    value={role}
+    onChange={(event) => setRole(event.target.value)}
+    required
+  />
+
+  <button type="submit" disabled={adding}>
+    {adding ? 'Adding...' : 'Add participant'}
+  </button>
+</form>
+
+    <div className="office-room">
+      {participants.map((participant) => (
+        <div
+          key={participant.id}
+          className="office-person"
+          style={{
+            left: `${Math.min(participant.x, 500)}px`,
+            top: `${participant.y}px`
+          }}
+        >
+          <ParticipantCard
+            name={participant.name}
+            role={participant.role}
+            status={
+              participant.name === "You"
+                ? (isSpeaking ? "Speaking" : "Listening")
+                : participant.status
+            }
+          />
         </div>
+      ))}
+    </div>
+</section>
 
-        {participants.map((participant) => (
-  <div
-    key={participant.id}
-    className="office-person"
-    style={{
-      left: `${Math.min(participant.x, 500)}px`,
-      top: `${participant.y}px`
-    }}
-  >
-    <div className="avatar">👨🏽‍💻</div>
-    <h3>{participant.name}</h3>
-    <p>{participant.role}</p>
-    <span className={`status ${participant.status.toLowerCase()}`}>
-      {participant.status}
-    </span>
-  </div>
-))}
-
-
-
-      </section>
-    </main>
+      </main>
   )
 }
 

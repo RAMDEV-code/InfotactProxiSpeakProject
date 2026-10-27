@@ -111,12 +111,6 @@
 
 .office-person {
   position: absolute;
-  width: 130px;
-  padding: 12px;
-  text-align: center;
-  background: white;
-  border: 1px solid #d9e5dc;
-  border-radius: 14px;
 }
 
 .office-person .avatar {
