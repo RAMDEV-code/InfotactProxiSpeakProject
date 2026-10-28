@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-
+const participants = require('./Models/participantModel');
 
 
 const app = express();
@@ -58,19 +58,36 @@ app.get("/api/participants/:id", (req, res) => {
 app.post("/api/participants", (req, res) => {
   const { name, role, x, y } = req.body;
 
-  if (!name || !role) {
+  if (
+    typeof name !== "string" ||
+    !name.trim() ||
+    typeof role !== "string" ||
+    !role.trim()
+  ) {
     return res.status(400).json({
       success: false,
-      message: "Name and role are required"
+      message: "A valid name and role are required"
+    });
+  }
+
+  if (
+    !Number.isFinite(x) ||
+    !Number.isFinite(y) ||
+    x < 0 ||
+    y < 0
+  ) {
+    return res.status(400).json({
+      success: false,
+      message: "Coordinates must be non-negative numbers"
     });
   }
 
   const newParticipant = {
     id: Math.max(0, ...participants.map((person) => person.id)) + 1,
-    name,
-    role,
-    x: Number(x) || 0,
-    y: Number(y) || 0,
+    name: name.trim(),
+    role: role.trim(),
+    x,
+    y,
     status: "Listening"
   };
 
@@ -87,21 +104,3 @@ app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-const participants = [
-  {
-    id: 1,
-    name: "Alex",
-    role: "Frontend Developer",
-    x: 100,
-    y: 120,
-    status: "Listening"
-  },
-  {
-    id: 2,
-    name: "You",
-    role: "Participant",
-    x: 300,
-    y: 220,
-    status: "Speaking"
-  }
-];

@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import './App.css'
 import ParticipantCard from './components/participantCard.jsx'
+import { getParticipants, createParticipant } from './services/participantService.js';
+import ParticipantForm from './components/ParticipantForm.jsx';
+import OfficeRoom from './components/OfficeRoom.jsx';
 
 
 function App() {
@@ -9,32 +12,33 @@ function App() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
-  const [name, setName] = useState('')
-  const [role, setRole] = useState('')
-  const [adding, setAdding] = useState(false)
+  
 
   useEffect(() => {
-  async function fetchParticipants() {
+  async function loadParticipants() {
     try {
-      const response = await fetch(
-        'http://localhost:5000/api/participants'
-      )
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch participants')
-      }
-
-      const result = await response.json()
-      setParticipants(result.data)
+      const data = await getParticipants();
+      setParticipants(data);
     } catch (err) {
-      setError(err.message)
+      setError(err.message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
-  fetchParticipants()
-}, [])
+  loadParticipants();
+}, []);
+
+async function handleAddParticipant({ name, role }) {
+  const newParticipant = await createParticipant({
+    name,
+    role,
+    x: 30 + (participants.length % 4) * 180,
+    y: 30 + Math.floor(participants.length / 4) * 150,
+  });
+
+  setParticipants((current) => [...current, newParticipant]);
+}
 
   return (
     <main className="app">
@@ -43,7 +47,7 @@ function App() {
         <p>Move closer. Join the conversation.</p>
       </header>
 
-      <section className="office">
+     <section className="office">
     <h2>Virtual Office</h2>
 
     <button
@@ -53,90 +57,8 @@ function App() {
       {isSpeaking ? "Stop speaking" : "Start speaking"}
     </button>
 
-    <form
-  onSubmit={async (event) => {
-    event.preventDefault()
-    setAdding(true)
-    setError('')
-
-    try {
-      const response = await fetch(
-        'http://localhost:5000/api/participants',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            name,
-            role,
-            x: 150,
-            y: 180
-          })
-        }
-      )
-
-      const result = await response.json()
-
-      if (!response.ok) {
-        throw new Error(
-          result.message || 'Could not add participant'
-        )
-      }
-
-      setParticipants((current) => [...current, result.data])
-      setName('')
-      setRole('')
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setAdding(false)
-    }
-  }}
->
-  <input
-    type="text"
-    placeholder="Participant name"
-    value={name}
-    onChange={(event) => setName(event.target.value)}
-    required
-  />
-
-  <input
-    type="text"
-    placeholder="Participant role"
-    value={role}
-    onChange={(event) => setRole(event.target.value)}
-    required
-  />
-
-  <button type="submit" disabled={adding}>
-    {adding ? 'Adding...' : 'Add participant'}
-  </button>
-</form>
-
-    <div className="office-room">
-      {participants.map((participant) => (
-        <div
-          key={participant.id}
-          className="office-person"
-          style={{
-            left: `${Math.min(participant.x, 500)}px`,
-            top: `${participant.y}px`
-          }}
-        >
-          <ParticipantCard
-            name={participant.name}
-            role={participant.role}
-            status={
-              participant.name === "You"
-                ? (isSpeaking ? "Speaking" : "Listening")
-                : participant.status
-            }
-          />
-        </div>
-      ))}
-    </div>
+<ParticipantForm onAddParticipant={handleAddParticipant} />
+    <OfficeRoom participants={participants} />
 </section>
 
       </main>
